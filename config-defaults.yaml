@@ -14,7 +14,7 @@ loss:
   value: CrossEntropyLoss
 optimizer:
   value: Adam
-scheduler:
-  value: CosineAnnealingWarmRestarts
+# scheduler:
+#   value: CosineAnnealingWarmRestarts
 save_top_k:
   value: 3

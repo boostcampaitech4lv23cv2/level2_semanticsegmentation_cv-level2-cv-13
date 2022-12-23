@@ -26,6 +26,8 @@ def set_seed(seed):
     np.random.seed(random_seed)
     random.seed(random_seed)
 
+
+
 def prepare_dataloader():
 
     cat_names = []
@@ -66,20 +68,32 @@ def prepare_dataloader():
     train_dataset = CustomDataLoader(data_dir=train_path, mode='train', transform=train_transform,dataset_path=dataset_path,category_names=category_names)
     val_dataset = CustomDataLoader(data_dir=val_path, mode='val', transform=val_transform,dataset_path=dataset_path,category_names=category_names)
 
+    def seed_worker(worker_id):
+        worker_seed = torch.initial_seed() % 2**32
+        np.random.seed(worker_seed)
+        random.seed(worker_seed)
 
+    g = torch.Generator()
+    g.manual_seed(wandb.config.seed)
 
     # DataLoader
     train_loader = torch.utils.data.DataLoader(dataset=train_dataset, 
                                             batch_size=wandb.config.batch_size,
                                             shuffle=True,
                                             num_workers=4,
-                                            collate_fn=collate_fn)
+                                            collate_fn=collate_fn,
+                                            worker_init_fn=seed_worker,
+                                            generator=g
+                                            )
 
     val_loader = torch.utils.data.DataLoader(dataset=val_dataset, 
                                             batch_size=wandb.config.batch_size,
                                             shuffle=False,
                                             num_workers=4,
-                                            collate_fn=collate_fn)
+                                            collate_fn=collate_fn,
+                                            worker_init_fn=seed_worker,
+                                            generator=g
+                                            )
 
 
     return train_loader,val_loader, sorted_df
@@ -103,7 +117,7 @@ def train(num_epochs, model, data_loader, val_loader, criterion, optimizer, save
             model = model.to(device)
             
             # inference
-            outputs = model(images)['out']
+            outputs = model(images)
             
             # loss 계산 (cross entropy loss)
             loss = criterion(outputs, masks)
@@ -116,9 +130,9 @@ def train(num_epochs, model, data_loader, val_loader, criterion, optimizer, save
             
             hist = add_hist(hist, masks, outputs, n_class=n_class)
             acc, acc_cls, mIoU, fwavacc, IoU = label_accuracy_score(hist)
-            log={"Train/mIoU": mIoU,"Train/acc": acc,"Train/acc_mean": acc_cls,"Train/fwavacc":fwavacc,"Train/avg_loss":mIoU,"Learning_Rate":scheduler.optimizer.param_groups[0]['lr']}
+            log={"Train/mIoU": mIoU,"Train/acc": acc,"Train/acc_mean": acc_cls,"Train/fwavacc":fwavacc,"Train/avg_loss":mIoU}
             wandb.log(log)
-        scheduler.step()     
+        # scheduler.step()     
         # validation 주기에 따른 loss 출력 및 best model 저장
         if (epoch + 1) % val_every == 0:
             mIoU = validation(epoch , model, val_loader, criterion, device)
@@ -144,7 +158,7 @@ def validation(epoch, model, data_loader, criterion, device):
             # device 할당
             model = model.to(device)
             
-            outputs = model(images)['out']
+            outputs = model(images)
             loss = criterion(outputs, masks)
             total_loss += loss
             cnt += 1
@@ -158,7 +172,7 @@ def validation(epoch, model, data_loader, criterion, device):
         IoU_by_class = [("Val/IoU_"+classes, round(IoU,4)) for IoU, classes in zip(IoU , sorted_df['Categories'])]
         
         avrg_loss = total_loss / cnt
-        log={"Val/mIoU": mIoU,"Val/acc": acc,"Val/acc_mean": acc_cls,"Val/fwavacc":fwavacc,"Val/avg_loss":avrg_loss}
+        log={"mIoU": mIoU,"Val/acc": acc,"Val/acc_mean": acc_cls,"Val/fwavacc":fwavacc,"Val/avg_loss":avrg_loss}
         for IoU, classes in zip(IoU , sorted_df['Categories']):
             log["Val/IoU_"+classes]=IoU
         wandb.log(log)
@@ -190,7 +204,7 @@ if __name__=="__main__":
         project="Semantic_Segmentation",
         config="/opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config-defaults.yaml"
         )
-    this_run_name=f"[{this_run_num}]-{wandb.config.model}-{wandb.config.loss}-{wandb.config.optimizer}-{wandb.config.scheduler}-{wandb.run.id}"
+    this_run_name=f"[{this_run_num}]-{wandb.config.model}-{wandb.config.loss}-{wandb.config.optimizer}-{wandb.run.id}"
     wandb.run.name=this_run_name
     wandb.run.save()
     dataset_path  = '/opt/ml/input/data'
@@ -204,7 +218,7 @@ if __name__=="__main__":
     model=getattr(model_collection,wandb.config.model)()
     criterion = getattr(loss_collection,wandb.config.loss)()
     optimizer = getattr(optimizer_collection,wandb.config.optimizer)(model)
-    scheduler=getattr(scheduler_collection,wandb.config.scheduler)(optimizer)
+    # scheduler=getattr(scheduler_collection,wandb.config.scheduler)(optimizer)
 
 
     # Read annotations
