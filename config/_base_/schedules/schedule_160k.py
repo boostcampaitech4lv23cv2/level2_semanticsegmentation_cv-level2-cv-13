@@ -6,4 +6,4 @@ optimizer_config = dict()
 # runtime settings
 # runner = dict(type='IterBasedRunner', max_iters=160000)
 checkpoint_config = dict(max_keep_ckpts=3, interval=1)
-evaluation = dict(interval=1, metric='mIoU', pre_eval=True)
+evaluation = dict(interval=1, metric='mIoU', pre_eval=True, save_best='mIoU')
