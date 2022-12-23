@@ -6,37 +6,6 @@ import numpy as np
 from pycocotools.coco import COCO
 import pandas as pd
 
-def init():
-    global category_names
-    dataset_path  = '../data'
-    anns_file_path = dataset_path + '/' + 'train_all.json'
-
-    # Read annotations
-    with open(anns_file_path, 'r') as f:
-        dataset = json.loads(f.read())
-
-    categories = dataset['categories']
-    anns = dataset['annotations']
-    
-    cat_names = []
-    for cat_it in categories:
-        cat_names.append(cat_it['name'])
-
-    cat_histogram = np.zeros(len(categories),dtype=int)
-    for ann in anns:
-        cat_histogram[ann['category_id']-1] += 1         
-            
-    df = pd.DataFrame({'Categories': cat_names, 'Number of annotations': cat_histogram})
-    df = df.sort_values('Number of annotations', 0, False)
-    # category labeling 
-    sorted_temp_df = df.sort_index()
-
-    # background = 0 에 해당되는 label 추가 후 기존들을 모두 label + 1 로 설정
-    sorted_df = pd.DataFrame(["Backgroud"], columns = ["Categories"])
-    sorted_df = sorted_df.append(sorted_temp_df, ignore_index=True)
-
-    category_names = list(sorted_df.Categories)
-
 
 def get_classname(classID, cats):
     for i in range(len(cats)):
@@ -46,12 +15,14 @@ def get_classname(classID, cats):
 
 class CustomDataLoader(Dataset):
     """COCO format"""
-    def __init__(self, data_dir, dataset_path, mode = 'train', transform = None):
+    def __init__(self, data_dir, dataset_path, mode = 'train', transform = None, **kwargs):
         super().__init__()
         self.mode = mode
         self.transform = transform
         self.coco = COCO(data_dir)
         self.dataset_path = dataset_path
+        if "category_names" in kwargs:
+            self.category_names=kwargs["category_names"]
 
     def __getitem__(self, index: int):
         # dataset이 index되어 list처럼 동작
@@ -79,7 +50,7 @@ class CustomDataLoader(Dataset):
             anns = sorted(anns, key=lambda idx : idx['area'], reverse=True)
             for i in range(len(anns)):
                 className = get_classname(anns[i]['category_id'], cats)
-                pixel_value = category_names.index(className)
+                pixel_value = self.category_names.index(className)
                 masks[self.coco.annToMask(anns[i]) == 1] = pixel_value
             masks = masks.astype(np.int8)
                         

@@ -1,106 +1,220 @@
-import model
-from pytorch_lightning.loggers import WandbLogger
-from pytorch_lightning import Trainer
+import json
+import os
+import torch
+import numpy as np
+import random
+import model_collection
+from dataset import CustomDataLoader
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
+import torch.nn as nn
+import pandas as pd
+from utils import label_accuracy_score, add_hist
+import wandb
+import loss_collection
+import scheduler_collection
+import optimizer_collection
+from tqdm import tqdm
 
-class MaskModel(pl.LightningModule):
-    def preprocessing(self):
+def set_seed(seed):
+    random_seed = seed
+    torch.manual_seed(random_seed)
+    torch.cuda.manual_seed(random_seed)
+    torch.cuda.manual_seed_all(random_seed) # if use multi-GPU
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    np.random.seed(random_seed)
+    random.seed(random_seed)
 
-        transform_train=A.Compose([
-            A.RandomCrop(320,256),
-            A.Resize(224,224,interpolation=cv2.INTER_CUBIC),
-            A.HorizontalFlip(),
-            A.CLAHE(),
-            A.Normalize(),  
-            ToTensorV2(),
-        ])
+def prepare_dataloader():
 
-        transform_val=A.Compose([
-            A.CenterCrop(320,256),
-            A.Resize(224,224,interpolation=cv2.INTER_CUBIC),
-            A.CLAHE(),
-            A.Normalize(),
-            ToTensorV2(),
-        ])
+    cat_names = []
+    for cat_it in categories:
+        cat_names.append(cat_it['name'])
 
-        train_idx,val_idx=SplitByHumanDataset.split_train_val()
-        train_dataset=SplitByHumanDataset(train_idx, transform_train,train=True)
-        val_dataset=SplitByHumanDataset(val_idx, transform_val,train=False)
+    cat_histogram = np.zeros(len(categories),dtype=int)
+    for ann in anns:
+        cat_histogram[ann['category_id']-1] += 1         
+            
+    df = pd.DataFrame({'Categories': cat_names, 'Number of annotations': cat_histogram})
+    df = df.sort_values('Number of annotations', 0, False)
+    # category labeling 
+    sorted_temp_df = df.sort_index()
+
+    # background = 0 에 해당되는 label 추가 후 기존들을 모두 label + 1 로 설정
+    sorted_df = pd.DataFrame(["Backgroud"], columns = ["Categories"])
+    sorted_df = sorted_df.append(sorted_temp_df, ignore_index=True)
+
+    category_names = list(sorted_df.Categories)
 
 
-        self.train_loader = DataLoader(
-            train_dataset,
-            batch_size=HyperParameter.BATCH_SIZE,
-            num_workers=multiprocessing.cpu_count() // 2,
-            pin_memory=True,
-            sampler=Sampler(train_dataset),
-            drop_last=True
-        )
+    def collate_fn(batch):
+        return tuple(zip(*batch))
 
-        self.val_loader = DataLoader(
-            val_dataset,
-            batch_size=HyperParameter.BATCH_SIZE,
-            num_workers=multiprocessing.cpu_count() // 2,
-            shuffle=False,
-            pin_memory=True,
-            drop_last=False,
-        )
 
-    def log_confusion_matrix(self,metric):
-        x=metric.compute().cpu().numpy()
-        fig = plt.figure(figsize = (20,10),dpi=100)
-        sns.heatmap(x,annot=True,cmap="Blues",fmt='g')
-        return fig
+    train_transform = A.Compose([
+                                ToTensorV2()
+                                ])
+
+    val_transform = A.Compose([
+                            ToTensorV2()
+                            ])
+
+
+
         
-    def __init__(self, model_name,num_class,learning_rate,loss_funtion_name):
-        super().__init__()
-        self.model=getattr(model,model_name)()
-        self.lr=learning_rate
-        self.criterion=getattr(loss_functions,loss_funtion_name)()
-        # setup metrics module
+    train_dataset = CustomDataLoader(data_dir=train_path, mode='train', transform=train_transform,dataset_path=dataset_path,category_names=category_names)
+    val_dataset = CustomDataLoader(data_dir=val_path, mode='val', transform=val_transform,dataset_path=dataset_path,category_names=category_names)
 
-        self.save_hyperparameters()
-        self.preprocessing()
 
-    def training_step(self, batch, batch_idx):
-        inputs,labels = batch
-        labels = SplitByHumanDataset.multi_to_single(*labels)
-        outs=self.model(inputs)
-        preds = torch.argmax(outs, dim=-1)
-        loss= self.criterion(outs,labels)
-        self.train_loss(loss)
-        self.train_acc(preds,labels)
-        self.train_f1(preds,labels)
-        self.train_conf_matrix(preds,labels)
-        self.log("Train/loss", self.train_loss,on_step=True,on_epoch=True)
-        self.log("Train/acc",self.train_acc,on_step=True,on_epoch=True)
-        self.log("Train/f1",self.train_f1,on_step=True,on_epoch=True)
-        return loss
+
+    # DataLoader
+    train_loader = torch.utils.data.DataLoader(dataset=train_dataset, 
+                                            batch_size=wandb.config.batch_size,
+                                            shuffle=True,
+                                            num_workers=4,
+                                            collate_fn=collate_fn)
+
+    val_loader = torch.utils.data.DataLoader(dataset=val_dataset, 
+                                            batch_size=wandb.config.batch_size,
+                                            shuffle=False,
+                                            num_workers=4,
+                                            collate_fn=collate_fn)
+
+
+    return train_loader,val_loader, sorted_df
+
+def train(num_epochs, model, data_loader, val_loader, criterion, optimizer, saved_dir, val_every, device):
+    print(f'Start training..')
+    n_class = 11
     
-    def training_epoch_end(self, outputs) -> None:
-        tensorboard=self.logger.experiment
-        tensorboard.add_figure("Train/confusion",self.log_confusion_matrix(self.train_conf_matrix),self.current_epoch)
-        self.train_conf_matrix.reset()
+    for epoch in range(num_epochs):
+        model.train()
+
+        hist = np.zeros((n_class, n_class))
+        for step, (images, masks, _) in enumerate(tqdm(data_loader)):
+            images = torch.stack(images)       
+            masks = torch.stack(masks).long() 
+            
+            # gpu 연산을 위해 device 할당
+            images, masks = images.to(device), masks.to(device)
+            
+            # device 할당
+            model = model.to(device)
+            
+            # inference
+            outputs = model(images)['out']
+            
+            # loss 계산 (cross entropy loss)
+            loss = criterion(outputs, masks)
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            
+            outputs = torch.argmax(outputs, dim=1).detach().cpu().numpy()
+            masks = masks.detach().cpu().numpy()
+            
+            hist = add_hist(hist, masks, outputs, n_class=n_class)
+            acc, acc_cls, mIoU, fwavacc, IoU = label_accuracy_score(hist)
+            log={"Train/mIoU": mIoU,"Train/acc": acc,"Train/acc_mean": acc_cls,"Train/fwavacc":fwavacc,"Train/avg_loss":mIoU,"Learning_Rate":scheduler.optimizer.param_groups[0]['lr']}
+            wandb.log(log)
+        scheduler.step()     
+        # validation 주기에 따른 loss 출력 및 best model 저장
+        if (epoch + 1) % val_every == 0:
+            mIoU = validation(epoch , model, val_loader, criterion, device)
+            save_model(model, saved_dir,mIoU,epoch)
+
+def validation(epoch, model, data_loader, criterion, device):
+    print(f'Start validation #{epoch}')
+    model.eval()
+
+    with torch.no_grad():
+        n_class = 11
+        total_loss = 0
+        cnt = 0
         
-    
-    def validation_step(self, batch, batch_idx):
-        inputs,labels = batch
-        labels = SplitByHumanDataset.multi_to_single(*labels)
-        outs=self.model(inputs)
-        preds = torch.argmax(outs, dim=-1)
-        loss= self.criterion(outs,labels)
-        self.val_loss(loss)
-        self.val_acc(preds,labels)
-        self.val_f1(preds,labels)
-        self.val_conf_matrix(preds,labels)
-        self.log("Validation/loss", self.val_loss,on_step=False,on_epoch=True)
-        self.log("Validation/acc",self.val_acc,on_step=False,on_epoch=True)
-        self.log("Validation/f1",self.val_f1,on_step=False,on_epoch=True)
-    
-    def validation_epoch_end(self, outputs) -> None:
-        tensorboard=self.logger.experiment
-        tensorboard.add_figure("Validation/confusion",self.log_confusion_matrix(self.val_conf_matrix),self.current_epoch)
-        self.val_conf_matrix.reset()
+        hist = np.zeros((n_class, n_class))
+        for step, (images, masks, _) in enumerate(tqdm(data_loader)):
+            
+            images = torch.stack(images)       
+            masks = torch.stack(masks).long()  
 
-    def configure_optimizers(self):
-        optimizer =torch.optim.Adam(self.parameters(), lr=self.lr)
-        return optimizer
+            images, masks = images.to(device), masks.to(device)            
+            
+            # device 할당
+            model = model.to(device)
+            
+            outputs = model(images)['out']
+            loss = criterion(outputs, masks)
+            total_loss += loss
+            cnt += 1
+            
+            outputs = torch.argmax(outputs, dim=1).detach().cpu().numpy()
+            masks = masks.detach().cpu().numpy()
+            
+            hist = add_hist(hist, masks, outputs, n_class=n_class)
+        
+        acc, acc_cls, mIoU, fwavacc, IoU = label_accuracy_score(hist)
+        IoU_by_class = [("Val/IoU_"+classes, round(IoU,4)) for IoU, classes in zip(IoU , sorted_df['Categories'])]
+        
+        avrg_loss = total_loss / cnt
+        log={"Val/mIoU": mIoU,"Val/acc": acc,"Val/acc_mean": acc_cls,"Val/fwavacc":fwavacc,"Val/avg_loss":avrg_loss}
+        for IoU, classes in zip(IoU , sorted_df['Categories']):
+            log["Val/IoU_"+classes]=IoU
+        wandb.log(log)
+        
+    return mIoU
+
+
+
+def save_model(model, saved_dir,metric,epoch):
+    output_path = os.path.join(saved_dir, this_run_name,)
+    if not os.path.isdir(output_path):                                                           
+        os.mkdir(output_path)
+    torch.save(model.state_dict(), os.path.join(output_path,f"{metric}_{epoch}.pth"))
+    files = os.listdir(output_path)
+    if len(files)>wandb.config.save_top_k:
+        files.sort()
+        os.remove(os.path.join(output_path,files[0]))
+
+
+if __name__=="__main__":
+    wandb.login()
+    runs=wandb.Api().runs(path="boostcamp_cv13/Semantic_Segmentation",order="created_at")
+    try:
+        this_run_num=f"{int(runs[0].name[1:4])+1:03d}"
+    except:
+        this_run_num="000"
+    wandb.init(
+        entity="boostcamp_cv13",
+        project="Semantic_Segmentation",
+        config="/opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config-defaults.yaml"
+        )
+    this_run_name=f"[{this_run_num}]-{wandb.config.model}-{wandb.config.loss}-{wandb.config.optimizer}-{wandb.config.scheduler}-{wandb.run.id}"
+    wandb.run.name=this_run_name
+    wandb.run.save()
+    dataset_path  = '/opt/ml/input/data'
+    anns_file_path = dataset_path + '/' + 'train_all.json'
+    device = "cuda" if torch.cuda.is_available() else "cpu" 
+    train_path = dataset_path + '/train.json'
+    val_path = dataset_path + '/val.json'
+    saved_dir = '/opt/ml/saved'
+
+
+    model=getattr(model_collection,wandb.config.model)()
+    criterion = getattr(loss_collection,wandb.config.loss)()
+    optimizer = getattr(optimizer_collection,wandb.config.optimizer)(model)
+    scheduler=getattr(scheduler_collection,wandb.config.scheduler)(optimizer)
+
+
+    # Read annotations
+    with open(anns_file_path, 'r') as f:
+        dataset = json.loads(f.read())
+        
+    categories = dataset['categories']
+    anns = dataset['annotations']
+
+
+    set_seed(wandb.config.seed)
+    train_loader,val_loader,sorted_df = prepare_dataloader()
+    train(wandb.config.num_epochs, model, train_loader, val_loader, criterion, optimizer, saved_dir, wandb.config.val_every, device)

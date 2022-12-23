@@ -9,3 +9,4 @@ class FCN_ResNet50(nn.Module):
     def forward(self, x):
         x=self.base_model(x)
         return x
+    
