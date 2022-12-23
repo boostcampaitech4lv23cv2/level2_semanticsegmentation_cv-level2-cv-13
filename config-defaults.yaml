@@ -1,0 +1,20 @@
+batch_size:
+  value: 16
+num_epochs:
+  value: 100
+learning_rate:
+  value: 0.0001
+seed:
+  value: 42
+val_every:
+  value: 1
+model:
+  value: FCN_ResNet50
+loss:
+  value: CrossEntropyLoss
+optimizer:
+  value: Adam
+scheduler:
+  value: CosineAnnealingWarmRestarts
+save_top_k:
+  value: 3
