@@ -81,15 +81,18 @@ def prepare_dataloader():
                                             batch_size=wandb.config.batch_size,
                                             shuffle=True,
                                             num_workers=4,
+                                            drop_last=True,
                                             collate_fn=collate_fn,
                                             worker_init_fn=seed_worker,
                                             generator=g
+                                            
                                             )
 
     val_loader = torch.utils.data.DataLoader(dataset=val_dataset, 
                                             batch_size=wandb.config.batch_size,
                                             shuffle=False,
                                             num_workers=4,
+                                            drop_last=True,
                                             collate_fn=collate_fn,
                                             worker_init_fn=seed_worker,
                                             generator=g
