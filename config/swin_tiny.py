@@ -6,15 +6,9 @@ checkpoint_file = 'https://download.openmmlab.com/mmsegmentation/v0.5/pretrain/s
 model = dict(
     backbone=dict(
         init_cfg=dict(type='Pretrained', checkpoint=checkpoint_file),
-        embed_dims=96,
-        depths=[2, 2, 6, 2],
-        num_heads=[3, 6, 12, 24],
-        window_size=7,
-        use_abs_pos_embed=False,
-        drop_path_rate=0.3,
-        patch_norm=True),
-    decode_head=dict(in_channels=[96, 192, 384, 768], num_classes=11),
-    auxiliary_head=dict(in_channels=384, num_classes=11))
+    ),
+    decode_head=dict(num_classes=11),
+    auxiliary_head=dict(num_classes=11))
 
 # AdamW optimizer, no weight decay for position embedding & layer norm
 # in backbone
@@ -48,20 +42,7 @@ log_config=dict(
     interval=50,
     hooks = [
         dict(type='TextLoggerHook'),
-        dict(type='WandbLoggerHook', interval=1000,
-            init_kwargs= dict(
-                project= 'Semantic_Segmentation',
-                entity = 'boostcamp_cv13',
-                name = 'upernet_swin_tiny',
-                config= {
-                    'optimizer_type':'AdamW',
-                    'optimizer_lr':optimizer['lr'],
-                    'lr_scheduler_type':lr_config['policy'] if lr_config != None else None,
-                }
-            ),
-            log_artifact=True
-            
-        )
+        dict(type='SweepLoggerHook')
     ]
 )
 
@@ -69,3 +50,7 @@ runner = dict(type='EpochBasedRunner', max_epochs=50)
 
 # By default, models are trained on 8 GPUs with 2 images per GPU
 data = dict(samples_per_gpu=16)
+
+custom_imports = dict(imports=['sweepLoggerHook'], allow_failed_imports=False)
+
+gpu_ids=[0]
