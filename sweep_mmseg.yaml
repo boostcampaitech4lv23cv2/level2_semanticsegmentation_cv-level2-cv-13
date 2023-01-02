@@ -7,7 +7,7 @@ parameters:
   learning_rate:
     min: 0.000001
     max: 0.0001
-  model:
+  model_config:
     values: 
       - opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/beit_base.py
       - opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/beit_large.py
