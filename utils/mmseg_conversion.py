@@ -47,7 +47,7 @@ dir_lists = [
     os.path.join(ROOT, 'mmseg', 'images', 'validation'),
     os.path.join(ROOT, 'mmseg', 'annotations', 'training'),
     os.path.join(ROOT, 'mmseg', 'annotations', 'validation'),
-    os.path.join(ROOT, 'mmseg', 'test')
+    os.path.join(ROOT, 'mmseg','images', 'test')
 ]
 
 
