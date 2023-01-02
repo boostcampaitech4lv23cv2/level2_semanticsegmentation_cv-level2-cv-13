@@ -21,7 +21,7 @@ from mmseg.utils import build_ddp, build_dp, get_device, setup_multi_processes
 import albumentations as A
 import numpy as np
 
-output_folder="/opt/ml/outputs/gaqoli29"
+output_folder="/opt/ml/outputs/37k8qdl7"
 config_file=None
 for file in os.listdir(output_folder):
     if file.endswith(".py"):
@@ -96,11 +96,11 @@ model = build_dp(model, cfg.device, device_ids=cfg.gpu_ids)
 results = single_gpu_test(
     model,
     data_loader)
-# transform = A.Compose([A.Resize(256,256)])
-# i=0
-# for data in data_loader:
-#     results[i]=transform(image=np.zeros((512,512)),mask=results[i])['mask']
-#     i+=1
+transform = A.Compose([A.Resize(256,256)])
+i=0
+for data in data_loader:
+    results[i]=transform(image=np.zeros((512,512)),mask=results[i])['mask']
+    i+=1
     
 submission = pd.read_csv('/opt/ml/input/code/submission/sample_submission.csv', index_col=None)
 
