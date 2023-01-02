@@ -112,7 +112,7 @@ for name in names:
     file_names.append(name+".jpg")
 # PredictionString 대입
 for file_name, res in zip(file_names, results):
-    submission = submission.append({"image_id" : file_name, "PredictionString" : ' '.join(str(e) for e in res[::2,::2].flatten().tolist())}, 
+    submission = submission.append({"image_id" : file_name, "PredictionString" : ' '.join(str(e) for e in res.flatten().tolist())}, 
                                    ignore_index=True)
 
 # submission.csv로 저장

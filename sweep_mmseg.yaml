@@ -13,20 +13,20 @@ parameters:
       - 0.0001
   model_config:
     values: 
-      - opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/beit_base.py
-      - opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/beit_large.py
-      - opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/convnext_base.py
-      - opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/convnext_small.py
-      - opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/convnext_tiny.py
-      - opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/mae_base.py
-      - opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/segformer_b0.py
-      - opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/segformer_b3.py
-      - opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/segformer_b5.py
-      - opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/swin_base_1k.py
-      - opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/swin_base_22k.py
-      - opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/swin_large_224.py
-      - opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/swin_large_384.py
-      - opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/swin_tiny.py
+      - /opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/beit_base.py
+      - /opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/beit_large.py
+      - /opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/convnext_base.py
+      - /opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/convnext_small.py
+      - /opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/convnext_tiny.py
+      - /opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/mae_base.py
+      - /opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/segformer_b0.py
+      - /opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/segformer_b3.py
+      - /opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/segformer_b5.py
+      - /opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/swin_base_1k.py
+      - /opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/swin_base_22k.py
+      - /opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/swin_large_224.py
+      - /opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/swin_large_384.py
+      - /opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config/swin_tiny.py
   batch_size:
     values: 
       - 4
