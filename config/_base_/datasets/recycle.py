@@ -74,6 +74,6 @@ data = dict(
         classes=classes,
         data_root=data_root,
         # reduce_zero_label=True,
-        img_dir='test',
+        img_dir='images/test',
         #ann_dir='annotations/test',
         pipeline=test_pipeline))
