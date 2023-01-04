@@ -1,5 +1,6 @@
 import argparse
 import os
+import os.path as osp
 import json
 import shutil
 import cv2
@@ -15,9 +16,14 @@ from torch.utils.data import Dataset, DataLoader
 import numpy as np
 
 ROOT = '/opt/ml/input/data'
+json_root = '/opt/ml/level2_semanticsegmentation_cv-level2-cv-13/stratified_fold_dataset'
 TRAINJSON = '/opt/ml/input/data/train.json'
 VALJSON = '/opt/ml/input/data/val.json'
 TESTJSON = '/opt/ml/input/data/test.json'
+
+root_json = os.listdir(json_root)
+train_json = [file for file in root_json if file.startswith("train")]
+validation_json = [file for file in root_json if file.startswith("val")]
 
 category_names = [
     'Backgroud',
@@ -42,21 +48,13 @@ category_names = [
 /opt/ml/input/data/mmseg/annotations/validation
 /opt/ml/input/data/mmseg/test
 '''
-dir_lists = [
-    os.path.join(ROOT, 'mmseg', 'images', 'training'),
-    os.path.join(ROOT, 'mmseg', 'images', 'validation'),
-    os.path.join(ROOT, 'mmseg', 'annotations', 'training'),
-    os.path.join(ROOT, 'mmseg', 'annotations', 'validation'),
-    os.path.join(ROOT, 'mmseg','images', 'test')
-]
-
 
 def parse_args():
     parser = argparse.ArgumentParser(
         description='Convert custom dataset to mmsegmentation format')
     parser.add_argument('--root_path', default=ROOT, help='the path of root dir')
-    parser.add_argument('--train_path', default=TRAINJSON, help='the path of train.json')
-    parser.add_argument('--val_path', default=VALJSON, help='the path of val.json')
+    parser.add_argument('--train_path', default=train_json, help='the path of train.json')
+    parser.add_argument('--val_path', default=validation_json, help='the path of val.json')
     parser.add_argument('--test_path', default=TESTJSON, help='the path of test.json')
     args = parser.parse_args()
     return args
@@ -117,12 +115,14 @@ class CustomDataLoader(Dataset):
         self.mode = mode
         self.transform = transform
         self.coco = COCO(data_dir)
+        self.idxlist = list(self.coco.getImgIds())
         
     def __getitem__(self, index: int):
         # dataset이 index되어 list처럼 동작
-        image_id = self.coco.getImgIds(imgIds=index)
+        image_id = self.coco.getImgIds(imgIds=self.idxlist[index])
+        # print(f"{index}, {image_id} clear")
         image_infos = self.coco.loadImgs(image_id)[0]
-        
+        # print(f"{image_infos} clear")
         # cv2 를 활용하여 image 불러오기
         images = cv2.imread(os.path.join(ROOT, image_infos['file_name']))
         images = cv2.cvtColor(images, cv2.COLOR_BGR2RGB).astype(np.float32)
@@ -169,19 +169,31 @@ class CustomDataLoader(Dataset):
 def main():
     args = parse_args()
 
-    # make directories
-    for dir in dir_lists:
-        mkdir_or_exist(dir)
+    for idx, name in enumerate(train_json):
+        dir_lists = [
+        os.path.join(ROOT, str(name[11]), 'images', 'training'),
+        os.path.join(ROOT, str(name[11]), 'images', 'validation'),
+        os.path.join(ROOT, str(name[11]), 'annotations', 'training'),
+        os.path.join(ROOT, str(name[11]), 'annotations', 'validation'),
+        os.path.join(ROOT, str(name[11]), 'images', 'test')
+        ]
 
-    # copy images
-    copy_images(TRAINJSON, dir_lists[0])
-    copy_images(VALJSON, dir_lists[1])
-    copy_images(TESTJSON, dir_lists[-1])
+        # make directories
+        for dir in dir_lists:
+            mkdir_or_exist(dir)
+        TRAINJSON = osp.join(json_root, name)
+        VALJSON = osp.join(json_root, "validation" + name[5:])
+        # print(TRAINJSON, VALJSON)
+        # copy images
+        copy_images(TRAINJSON, dir_lists[0])
+        copy_images(VALJSON, dir_lists[1])
+        copy_images(TESTJSON, dir_lists[-1])
 
-    # create masks (annotations)
-    create_mask(TRAINJSON, dir_lists[2])
-    create_mask(VALJSON, dir_lists[3])
-    print('Done!')
+        # create masks (annotations)
+        create_mask(TRAINJSON, dir_lists[2])
+        create_mask(VALJSON, dir_lists[3])
+        print('Done!')
+
 
 if __name__ == '__main__':
     main()
