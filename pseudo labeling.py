@@ -92,11 +92,11 @@ model = build_dp(model, cfg.device, device_ids=cfg.gpu_ids)
 results = single_gpu_test(
     model,
     data_loader)
-transform = A.Compose([A.resize(128,128)])
-i=0
-for data in data_loader:
-    results[i]=transform(image=np.zeros((512,512)),mask=results[i])['mask']
-    i+=1
+# transform = A.Compose([A.Resize(256,256)])
+# i=0
+# for data in data_loader:
+#     results[i]=transform(image=np.zeros((512,512)),mask=results[i])['mask']
+#     i+=1
     
 submission = pd.read_csv('/opt/ml/input/code/submission/sample_submission.csv', index_col=None)
 
@@ -162,8 +162,8 @@ with open(os.path.join(output_folder,"output.csv"), 'r') as f:
 
         for xy, cat_num in enumerate(df_list):
             if cat_num != 0:
-                cat_dict[f"{cat_num}"].append((xy)%512)
-                cat_dict[f"{cat_num}"].append((xy)//512)
+                cat_dict[f"{cat_num}"].append(xy%512)
+                cat_dict[f"{cat_num}"].append(xy//512)
 
         for cat_class in cat_dict:
             if cat_dict[f"{cat_class}"]:
@@ -173,7 +173,7 @@ with open(os.path.join(output_folder,"output.csv"), 'r') as f:
                                             "segmentation": [
                                                 cat_dict[f"{cat_class}"]
                                                 ],
-                                            "area": len(cat_dict[f"{cat_class}"]),
+                                            "area": len(cat_dict[f"{cat_class}"])//2,
                                             "bbox": None,
                                             "iscrowd": 0
                                             })
