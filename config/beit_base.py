@@ -4,7 +4,7 @@ _base_ = [
 ]
 
 model = dict(
-    pretrained='https://conversationhub.blob.core.windows.net/beit-share-public/beit/beit_base_patch16_224_pt22k_ft22k.pth',
+    pretrained='/opt/ml/input/data/pretrained/beit_base_patch16_224_pt22k_ft22k.pth',
     backbone=dict(
         img_size=(512,512)
     ),
