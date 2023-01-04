@@ -10,11 +10,11 @@ file_name_list = os.listdir(file_path)
 
 for file_name in file_name_list:
     new_path = osp.join(file_path, file_name)
-    path = osp.join(file_path, "new", file_name)
+    # path = osp.join(file_path, "new", file_name)
     # print(new_path)
     with open(new_path, "r") as f:
         new_json = json.load(f)
 
 
-    with open(path, "w") as nf:
+    with open(new_path, "w") as nf:
         json.dump(new_json, nf, indent=4)#, sort_keys=True)

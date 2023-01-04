@@ -1,6 +1,6 @@
 # dataset settings
 dataset_type = 'CustomDataset'
-data_root = '/opt/ml/input/data/mmseg'
+data_root = '/opt/ml/input/data/2'
 
 # custom classes
 classes = (

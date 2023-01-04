@@ -39,14 +39,14 @@ lr_config = dict(
 
 #Wandb Config
 log_config=dict(
-    interval=50,
+    interval=100,
     hooks = [
         dict(type='TextLoggerHook'),
         dict(type='SweepLoggerHook')
     ]
 )
 
-runner = dict(type='EpochBasedRunner', max_epochs=50)
+runner = dict(type='EpochBasedRunner', max_epochs=100)
 
 # By default, models are trained on 8 GPUs with 2 images per GPU
 data = dict(samples_per_gpu=16)
