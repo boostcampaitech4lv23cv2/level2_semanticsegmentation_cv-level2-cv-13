@@ -45,7 +45,7 @@ def main():
     wandb.init(
         entity="boostcamp_cv13",
         project="Semantic_Segmentation",
-        config="/opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config-defaults-mmseg.yaml"
+        config="/opt/ml/level2_semanticsegmentation_cv-level2-cv-13/mmsegmentation/config-defaults-mmseg.yaml"
         )
     this_run_name=f"[{this_run_num}]-{wandb.config.model_config}-{wandb.run.id}"
     wandb.run.name=this_run_name

@@ -1,7 +1,7 @@
 import os
 import torch
 import wandb
-import model_collection
+import sweeps.model_collection as model_collection
 import numpy as np
 from tqdm import tqdm
 import albumentations as A

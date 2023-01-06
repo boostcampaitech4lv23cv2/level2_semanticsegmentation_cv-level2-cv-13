@@ -3,17 +3,17 @@ import os
 import torch
 import numpy as np
 import random
-import model_collection
+import sweeps.model_collection as model_collection
 from dataset import CustomDataLoader
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 import torch.nn as nn
 import pandas as pd
-from utils import label_accuracy_score, add_hist
+from segmentation_models.utils import label_accuracy_score, add_hist
 import wandb
-import loss_collection
-import scheduler_collection
-import optimizer_collection
+import sweeps.loss_collection as loss_collection
+import sweeps.scheduler_collection as scheduler_collection
+import sweeps.optimizer_collection as optimizer_collection
 from tqdm import tqdm
 
 def set_seed(seed):
@@ -205,7 +205,7 @@ if __name__=="__main__":
     wandb.init(
         entity="boostcamp_cv13",
         project="Semantic_Segmentation",
-        config="/opt/ml/level2_semanticsegmentation_cv-level2-cv-13/config-defaults.yaml"
+        config="/opt/ml/level2_semanticsegmentation_cv-level2-cv-13/segmentation_models/config-defaults.yaml"
         )
     this_run_name=f"[{this_run_num}]-{wandb.config.model}-{wandb.config.loss}-{wandb.config.optimizer}-{wandb.run.id}"
     wandb.run.name=this_run_name
