@@ -1,0 +1,8 @@
+learning_rate:
+  value: 0.00001
+seed:
+  value: 42
+model_config:
+  value: /opt/ml/level2_semanticsegmentation_cv-level2-cv-13/mmsegmentation/config/swin_base_22k.py
+batch_size:
+  value: 8
