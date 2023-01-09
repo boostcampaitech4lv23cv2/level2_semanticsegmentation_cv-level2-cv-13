@@ -24,7 +24,7 @@
 </table>
 
 ## 🗑️재활용 품목 분류를 위한 Semantic Segmentation
-![image](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/43a6fd70-05de-4aef-bf20-0a7e54da1c47/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230106%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230106T074122Z&X-Amz-Expires=86400&X-Amz-Signature=de16cce709af334e903fa562add5c191bb36b6110480bc3ae26b94c4d55313be&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
+![image](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/43a6fd70-05de-4aef-bf20-0a7e54da1c47/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230109%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230109T013836Z&X-Amz-Expires=86400&X-Amz-Signature=c97b25b34dbdd419a71cade60f95f42d57e036336fd48cf34b4cea4434da51a8&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
 >바야흐로 대량 생산, 대량 소비의 시대, 우리는 많은 물건이 대량으로 생산되고, 소비되는 시대를 살고 있습니다. 하지만 이러한 문화는 '쓰레기대란','매립지 부족'과 같은 여러 사회문제를 낳고 있습니다.
 
 >분리수거는 이러한 환경 부담을 줄일 수 있는 방법 중 하나입니다. 잘 분리배출 된 쓰레기는 자원으로서 가치를 인정받아 재활용되지만, 잘못 분리배출 되면 그대로 폐기물로 분류되어 매립 또는 소각되기 때문입니다. 따라서 우리는 사진에서 쓰레기를 Segmentation하는 모델을 만들어 이러한 문제점을 해결해보고자 합니다. 문제 해결을 위한 데이터셋으로는 배경, 일반 쓰레기, 플라스틱, 종이, 유리 등 11 종류의 쓰레기가 찍힌 사진 데이터셋이 제공됩니다. 여러분에 의해 만들어진 우수한 성능의 모델은 쓰레기장에 설치되어 정확한 분리수거를 돕거나, 어린아이들의 분리수거 교육 등에 사용될 수 있을 것입니다. 부디 지구를 위기로부터 구해주세요! 🌎
@@ -39,7 +39,7 @@
 
 
 ## 🗓️Timeline
-![images](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/5f0444f2-03de-4bb7-9039-7b32c170d8bd/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230106%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230106T075037Z&X-Amz-Expires=86400&X-Amz-Signature=5d0405213ef98164fa354f6a4758dc17ebd991caa6ad674c5951a5f7743a5b0d&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
+![images](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/5f0444f2-03de-4bb7-9039-7b32c170d8bd/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230109%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230109T013809Z&X-Amz-Expires=86400&X-Amz-Signature=96358e08cd1da54ad438aa48e237f93ece079e36ee02d00063d72da44bf8726f&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
 
 ## 🧑‍💻Team Roles
 ><b>신재영</b>
@@ -123,9 +123,9 @@ mim install mmseg
 
 ## 🎉Results🎉
 >### Public LB : 12th (mAP 0.7458)
-![images](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/5b818cff-d49f-4aef-928e-7b33124f5f84/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20221216%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20221216T095515Z&X-Amz-Expires=86400&X-Amz-Signature=6b5679e778d371da8774460620d8518d41d24f73d56ce4dc114dcd762a741580&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
+![images](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/ccbdc476-a644-40c4-bec0-e9ea54d3afaa/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230109%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230109T014030Z&X-Amz-Expires=86400&X-Amz-Signature=5b85336de910b705f28550d4e3c0fd157c6ce8beb225fe3914bc219810f5ad3c&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
 >### Private LB : 12th (mAP 0.7296)
-![images](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/37782bf4-cb09-4970-b2cf-378e814f9e5f/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20221216%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20221216T095451Z&X-Amz-Expires=86400&X-Amz-Signature=be091942b43d5b18366b8ea0a7ea39d4bda3bd355d5783affbc7eb92c7ce9077&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
+![images](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/38122e8b-2f28-496a-95ee-756e50ffdd19/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230109%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230109T014045Z&X-Amz-Expires=86400&X-Amz-Signature=1b6ffaff3e91e2c72fccab36409630b82540089bd0079316c7c76c656babe012&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
 
 ## 📌Please Look at our Wrap-Up Report for more details
-[![image](https://user-images.githubusercontent.com/62556539/200262300-3765b3e4-0050-4760-b008-f218d079a770.png)](https://www.notion.so/Wrap-up-Report-d2fbd966d5cf418483aef20acfc0443e)
+[![image](https://user-images.githubusercontent.com/62556539/200262300-3765b3e4-0050-4760-b008-f218d079a770.png)](https://www.notion.so/Segmentation-wrap-up-report-c6478ce7542c460888f1cc8a647ec395)
