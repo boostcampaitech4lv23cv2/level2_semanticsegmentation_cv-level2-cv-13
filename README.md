@@ -24,7 +24,7 @@
 </table>
 
 ## 🗑️재활용 품목 분류를 위한 Semantic Segmentation
-![image](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/43a6fd70-05de-4aef-bf20-0a7e54da1c47/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230109%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230109T013836Z&X-Amz-Expires=86400&X-Amz-Signature=c97b25b34dbdd419a71cade60f95f42d57e036336fd48cf34b4cea4434da51a8&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
+![image](https://user-images.githubusercontent.com/29935109/211736058-076bca36-c60e-41fd-b10b-ede511ebcc93.png)
 >바야흐로 대량 생산, 대량 소비의 시대, 우리는 많은 물건이 대량으로 생산되고, 소비되는 시대를 살고 있습니다. 하지만 이러한 문화는 '쓰레기대란','매립지 부족'과 같은 여러 사회문제를 낳고 있습니다.
 
 >분리수거는 이러한 환경 부담을 줄일 수 있는 방법 중 하나입니다. 잘 분리배출 된 쓰레기는 자원으로서 가치를 인정받아 재활용되지만, 잘못 분리배출 되면 그대로 폐기물로 분류되어 매립 또는 소각되기 때문입니다. 따라서 우리는 사진에서 쓰레기를 Segmentation하는 모델을 만들어 이러한 문제점을 해결해보고자 합니다. 문제 해결을 위한 데이터셋으로는 배경, 일반 쓰레기, 플라스틱, 종이, 유리 등 11 종류의 쓰레기가 찍힌 사진 데이터셋이 제공됩니다. 여러분에 의해 만들어진 우수한 성능의 모델은 쓰레기장에 설치되어 정확한 분리수거를 돕거나, 어린아이들의 분리수거 교육 등에 사용될 수 있을 것입니다. 부디 지구를 위기로부터 구해주세요! 🌎
@@ -39,7 +39,8 @@
 
 
 ## 🗓️Timeline
-![images](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/5f0444f2-03de-4bb7-9039-7b32c170d8bd/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230109%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230109T013809Z&X-Amz-Expires=86400&X-Amz-Signature=96358e08cd1da54ad438aa48e237f93ece079e36ee02d00063d72da44bf8726f&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
+![image](https://user-images.githubusercontent.com/29935109/211736165-d0f9ab28-3dd0-458d-8657-77577c5e6e97.png)
+
 
 ## 🧑‍💻Team Roles
 ><b>신재영</b>
@@ -122,10 +123,11 @@ mim install mmseg
 [Link To Installation Guide](https://github.com/boostcampaitech4lv23cv2/level2_semanticsegmentation_cv-level2-cv-13/issues, "Click to move issue page")
 
 ## 🎉Results🎉
->### Public LB : 12th (mAP 0.7458)
-![images](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/ccbdc476-a644-40c4-bec0-e9ea54d3afaa/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230109%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230109T014030Z&X-Amz-Expires=86400&X-Amz-Signature=5b85336de910b705f28550d4e3c0fd157c6ce8beb225fe3914bc219810f5ad3c&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
+>### Public LB : 11th (mAP 0.7502)
+![image](https://user-images.githubusercontent.com/29935109/211736691-96c0fe1a-120e-4e2f-ab68-f8b931f971ba.png)
 >### Private LB : 12th (mAP 0.7296)
-![images](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/38122e8b-2f28-496a-95ee-756e50ffdd19/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230109%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230109T014045Z&X-Amz-Expires=86400&X-Amz-Signature=1b6ffaff3e91e2c72fccab36409630b82540089bd0079316c7c76c656babe012&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
+![image](https://user-images.githubusercontent.com/29935109/211736663-6eb4e516-6615-477b-88ee-18893aded854.png)
+
 
 ## 📌Please Look at our Wrap-Up Report for more details
 [![image](https://user-images.githubusercontent.com/62556539/200262300-3765b3e4-0050-4760-b008-f218d079a770.png)](https://www.notion.so/Segmentation-wrap-up-report-c6478ce7542c460888f1cc8a647ec395)
